@@ -1,19 +1,24 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from swf import Parser
-from tags import TAG_DEFINE_EDIT_TEXT
+import sys
 
+from browser import UtaNetBrowser
+
+
+def get_lyric(url):
+    browser = UtaNetBrowser()
+    music_id = browser.get_music_id(url)
+    return browser.get_lyric(music_id)
 
 if __name__ == '__main__':
-    from browser import utanet
+    argv = sys.argv[1:]
+    if len(argv) >= 1:
+        url = argv[0]
+    else:
+        url = raw_input('Please input the url: ')
 
-    url = 'http://www.uta-net.com/user/phplib/view_0.php?ID=74849'
-    browser = utanet.Browser()
-    music_id = browser.get_music_id(url)
-    swf = browser.get_swf(music_id)
-    with open('testswf.swf', 'w') as f:
-        f.write(swf)
+    print get_lyric(url)
 
     #with open('target.swf') as f:
     #    data = f.read()

@@ -7,11 +7,17 @@ from urllib import urlencode
 from urllib2 import urlopen, Request
 
 from base import BaseBrowser
+from parser import Parser
+from tags import TAG_DEFINE_EDIT_TEXT
 
 
-class Browser(BaseBrowser):
+class UtaNetBrowser(BaseBrowser):
     def get_lyric(self, music_id):
         swf = self.get_swf(music_id)
+        parser = Parser(swf)
+        for tag in parser.tags:
+            if tag.tag_type == TAG_DEFINE_EDIT_TEXT:
+                return tag.content.initial_text
 
     def get_music_id(self, lyric_url):
         regex = re.compile(r'^.+\?ID=(?P<music_id>\d+)$')
