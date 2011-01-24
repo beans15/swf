@@ -5,6 +5,13 @@ from itertools import islice
 from struct import unpack
 
 
+def get_tag_class_for_type(tag_type):
+    try:
+        return dict(TAGS)[tag_type]
+    except KeyError:
+        return NotImplementedTag
+
+
 TAG_PLACE_OBJECT = 4
 TAG_PLACE_OBJECT2 = 26
 TAG_PLACE_OBJECT3 = 70
