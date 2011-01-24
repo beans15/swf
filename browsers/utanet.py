@@ -7,8 +7,8 @@ from urllib import urlencode
 from urllib2 import urlopen, Request
 
 from base import BaseBrowser
-from parser import Parser
-from tags import TAG_DEFINE_EDIT_TEXT
+from swf.parser import Parser
+from swf.tags import TAG_DEFINE_EDIT_TEXT
 
 
 class UtaNetBrowser(BaseBrowser):

@@ -1,24 +1,32 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import os
 import sys
+# パスを通す
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),
+                                             '../')))
 
-from browser import UtaNetBrowser
+from browsers import UtaNetBrowser, UtamapBrowser
+from parser import Parser
+from tags import TAG_DEFINE_EDIT_TEXT
 
 
 def get_lyric(url):
-    browser = UtaNetBrowser()
+    browser = UtamapBrowser()
     music_id = browser.get_music_id(url)
     return browser.get_lyric(music_id)
+
 
 if __name__ == '__main__':
     argv = sys.argv[1:]
     if len(argv) >= 1:
         url = argv[0]
     else:
-        url = raw_input('Please input the url: ')
+        print >>sys.stderr, 'Please input the url: ',
+        url = raw_input()
 
-    print get_lyric(url)
+    print get_lyric(url).encode('utf-8')
 
     #with open('target.swf') as f:
     #    data = f.read()
