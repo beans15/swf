@@ -1,17 +1,18 @@
 # -*- coding: utf-8 -*-
 
 import math
+import zlib
 
 from datatypes import Rect
 from itertools import islice
 from struct import unpack
-from tags import TAG_END, TAGS
+from tags import TAG_END, get_tag_class_for_type
 
 
 class Parser(object):
     def __init__(self, data):
-        self.data = data
         self.header = Header(data)
+        data = self.header.decompressed_data
 
         tags = []
         end = self.header.tell()
@@ -29,11 +30,13 @@ class Parser(object):
 
 class Header(object):
     def __init__(self, data):
-        self.data = data
-
         self.is_compressed = data[0] == 'C'
         self.version = ord(data[3])
         self.file_size = unpack('<L', data[4:8])[0]
+
+        if self.is_compressed:
+            data = data[:8] + zlib.decompress(data[8:])
+        self.data = data
 
         self.frame_size = Rect(islice(data, 8, None))
         index = 8 + self.frame_size.tell()
@@ -42,6 +45,10 @@ class Header(object):
         self.frame_count = unpack('<H', data[index + 2:index + 4])[0]
 
         self.end = index + 4
+
+    @property
+    def decompressed_data(self):
+        return self.data
 
     def tell(self):
         """ヘッダが占めるバイト数を返す"""
@@ -65,7 +72,7 @@ class Tag(object):
         self.tag_length = tag_length
 
         self.content_value = ''.join(islice(data, tag_length))
-        klass = dict(TAGS)[self.tag_type]
+        klass = get_tag_class_for_type(tag_type)
         try:
             self.content = klass(self.content_value)
         except NotImplementedError:
